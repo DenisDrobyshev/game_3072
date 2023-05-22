@@ -25,7 +25,7 @@ public class Game3072 extends JPanel {
     addKeyListener(new KeyAdapter() {
       @Override
       public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
           resetGame();
         }
         if (!canMove()) {
@@ -347,7 +347,7 @@ public class Game3072 extends JPanel {
       if (myWin || myLose) {
         g.setFont(new Font(FONT_NAME, Font.PLAIN, 16));
         g.setColor(new Color(128, 128, 128, 128));
-        g.drawString("Нажмите ESC, чтобы начать заново", 80, getHeight() - 40);
+        g.drawString("Нажмите ENTER, чтобы начать заново", 80, getHeight() - 40);
       }
     }
     g.setFont(new Font(FONT_NAME, Font.PLAIN, 18));
