@@ -1,3 +1,3 @@
-Java implementation of 2048 game
+Analogue of the game 2048 -> 3072
 ====
-<img src="2048.png" width="50%" height="50%"/>
+<img src="3072.png" width="50%" height="50%"/>
