@@ -335,7 +335,7 @@ public class Game3072 extends JPanel {
     if (myWin || myLose) {
       g.setColor(new Color(255, 255, 255, 30));
       g.fillRect(0, 0, getWidth(), getHeight());
-      g.setColor(new Color(78, 139, 202));
+      g.setColor(new Color(190, 78, 202));
       g.setFont(new Font(FONT_NAME, Font.BOLD, 48));
       if (myWin) {
         g.drawString("Вы выиграли!", 68, 150);
