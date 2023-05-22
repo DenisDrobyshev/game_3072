@@ -11,7 +11,7 @@ import java.util.List;
 public class Game3072 extends JPanel {
   private static final Color BG_COLOR = new Color(0xFFFFFF);
   private static final String FONT_NAME = "Arial";
-  private static final int TILE_SIZE = 64;
+  private static final int TILE_SIZE = 80;
   private static final int TILES_MARGIN = 16;
 
   private Tile[] myTiles;
@@ -20,7 +20,7 @@ public class Game3072 extends JPanel {
   int myScore = 0;
 
   public Game3072() {
-    setPreferredSize(new Dimension(400, 600));
+    setPreferredSize(new Dimension(450, 500));
     setFocusable(true);
     addKeyListener(new KeyAdapter() {
       @Override
@@ -28,11 +28,15 @@ public class Game3072 extends JPanel {
         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
           resetGame();
         }
+        // Если игрок не может сделать ход, игра проиграна
         if (!canMove()) {
           myLose = true;
         }
 
         if (!myWin && !myLose) {
+          // Если игрок еще не выиграл и не проиграл,
+          // то в зависимости от нажатой клавиши вызывается соответствующий метод
+          // для перемещения плиток в игре.
           switch (e.getKeyCode()) {
             case KeyEvent.VK_LEFT:
               left();
@@ -48,11 +52,11 @@ public class Game3072 extends JPanel {
               break;
           }
         }
-
+        // Если игрок не выиграл и не может сделать ход, игра проиграна
         if (!myWin && !canMove()) {
           myLose = true;
         }
-
+        // перерисовка окна игры
         repaint();
       }
     });
@@ -142,7 +146,7 @@ public class Game3072 extends JPanel {
       int index = (int) (Math.random() * list.size()) % list.size();
       Tile emptyTime = list.get(index);
       emptyTime.value = Math.random() < 0.9 ? 3 : 6;
-      // Полученная пустая ячейка заполняется новой плиткой с номиналом 2 или 4
+      // Полученная пустая ячейка заполняется новой плиткой с номиналом 3 или 6
       // с вероятностью 90 % и 10 % соответственно.
     }
   }
@@ -202,6 +206,11 @@ public class Game3072 extends JPanel {
   }
 
   private boolean compare(Tile[] line1, Tile[] line2) {
+    /*
+     * сравнивает две линии, представленные в виде массивов объектов Tile.
+     * Если массивы имеют одинаковую длину и значения всех элементов в них равны,
+     * то функция возвращает true, иначе false.
+     */
     if (line1 == line2) {
       return true;
     } else if (line1.length != line2.length) {
@@ -217,8 +226,15 @@ public class Game3072 extends JPanel {
   }
 
   private Tile[] rotate(int angle) {
+    /*
+     * принимает на вход угол поворота angle и возвращает новый массив объектов Tile,
+     *  содержащий новые позиции плиток после поворота.
+     */
     Tile[] newTiles = new Tile[4 * 4];
     int offsetX = 3, offsetY = 3;
+    // Устанавливаются смещения offsetX и offsetY в зависимости от угла поворота.
+    // Если угол равен 90, то offsetY устанавливается в 0,
+    // а если угол равен 270, то offsetX устанавливается в 0.
     if (angle == 90) {
       offsetY = 0;
     } else if (angle == 270) {
@@ -232,6 +248,8 @@ public class Game3072 extends JPanel {
       for (int y = 0; y < 4; y++) {
         int newX = (x * cos) - (y * sin) + offsetX;
         int newY = (x * sin) + (y * cos) + offsetY;
+        // Новые координаты используются для записи плитки в новый массив newTiles
+        // с помощью индексации по формуле (newX) + (newY) * 4.
         newTiles[(newX) + (newY) * 4] = tileAt(x, y);
       }
     }
@@ -239,26 +257,41 @@ public class Game3072 extends JPanel {
   }
 
   private Tile[] moveLine(Tile[] oldLine) {
+    /*
+     * принимает на вход массив объектов Tile oldLine и возвращает новый массив объектов Tile,
+     * содержащий новые позиции плиток после перемещения.
+     */
     LinkedList<Tile> l = new LinkedList<Tile>();
     for (int i = 0; i < 4; i++) {
+      // Если плитка не пуста, то она добавляется в конец списка l с помощью метода addLast().
       if (!oldLine[i].isEmpty())
         l.addLast(oldLine[i]);
-    }
+    } // Если список l пуст, то возвращается исходный массив oldLine.
     if (l.size() == 0) {
       return oldLine;
-    } else {
+    } else { // В противном случае создается новый массив объектов Tile - newLine размером 4.
       Tile[] newLine = new Tile[4];
       ensureSize(l, 4);
       for (int i = 0; i < 4; i++) {
         newLine[i] = l.removeFirst();
+        // Каждый элемент списка l удаляется из начала списка и записывается
+        // в соответствующую позицию нового массива newLine с помощью индексации по i.
       }
       return newLine;
     }
   }
 
   private Tile[] mergeLine(Tile[] oldLine) {
+    /*
+     * принимает на вход массив объектов Tile oldLine и возвращает
+     * новый массив объектов Tile, содержащий объединенные плитки.
+     */
+
+    // Создается новый связанный список объектов Tile - list.
     LinkedList<Tile> list = new LinkedList<Tile>();
+    // перебор всех плиток в oldLine с помощью цикла for.
     for (int i = 0; i < 4 && !oldLine[i].isEmpty(); i++) {
+      // Если плитка не пуста, то ее значение записывается в переменную num.
       int num = oldLine[i].value;
       if (i < 3 && oldLine[i].value == oldLine[i + 1].value) {
         num *= 2;
@@ -267,19 +300,25 @@ public class Game3072 extends JPanel {
         if (num == ourTarget) {
           myWin = true;
         }
+        // индекс i увеличивается на 1, чтобы пропустить следующую плитку.
         i++;
-      }
+      }// Объект Tile с новым значением num добавляется в конец списка list с помощью метода add().
       list.add(new Tile(num));
-    }
+    } // Если список list пуст, то возвращается исходный массив oldLine.
     if (list.size() == 0) {
       return oldLine;
-    } else {
+    } else { // иначе список list расширяется до размера 4 с помощью метода ensureSize().
       ensureSize(list, 4);
       return list.toArray(new Tile[4]);
     }
   }
 
   private static void ensureSize(java.util.List<Tile> l, int s) {
+    /*
+     * принимает на вход связанный список объектов Tile l и целочисленное значение s.
+     * Она увеличивает размер списка l до значения s,
+     * добавляя пустые плитки (объекты Tile) в конец списка с помощью метода add().
+     */
     while (l.size() != s) {
       l.add(new Tile());
     }
@@ -287,8 +326,13 @@ public class Game3072 extends JPanel {
 
   private Tile[] getLine(int index) {
     Tile[] result = new Tile[4];
+    // В каждой итерации цикла создается объект Tile
+    // с помощью метода tileAt, который принимает на вход два целочисленных
+    // значения (координаты плитки на игровом поле) и возвращает объект Tile
+    // на этой позиции.
     for (int i = 0; i < 4; i++) {
       result[i] = tileAt(i, index);
+      // Полученный объект Tile добавляется в массив result на соответствующую позицию i.
     }
     return result;
   }
@@ -298,12 +342,18 @@ public class Game3072 extends JPanel {
   }
 
   @Override
+  // Создается метод paint, который принимает на вход объект Graphics.
   public void paint(Graphics g) {
+    // Вызывается метод paint родительского класса, чтобы нарисовать фон.
     super.paint(g);
+    // Устанавливается цвет фона.
     g.setColor(BG_COLOR);
+    // Рисуется прямоугольник, заполняющий всю область игрового поля.
     g.fillRect(0, 0, this.getSize().width, this.getSize().height);
+    // В каждой итерации цикла получается объект Tile с помощью индексации массива myTiles.
     for (int y = 0; y < 4; y++) {
       for (int x = 0; x < 4; x++) {
+        // принимает на вход объект Graphics, объект Tile и координаты x и y.
         drawTile(g, myTiles[x + y * 4], x, y);
       }
     }
@@ -311,31 +361,45 @@ public class Game3072 extends JPanel {
 
   private void drawTile(Graphics g2, Tile tile, int x, int y) {
     Graphics2D g = ((Graphics2D) g2);
+    // параметры рендеринга для сглаживания границ и нормализации контуров.
     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
+    // значение плитки из объекта Tile.
     int value = tile.value;
+    // смещения для координат x и y плитки.
     int xOffset = offsetCoors(x);
     int yOffset = offsetCoors(y);
+    // Устанавливается цвет фона плитки и рисуется закругленный прямоугольник с размерами TILE_SIZE.
     g.setColor(tile.getBackground());
-    g.fillRoundRect(xOffset, yOffset, TILE_SIZE, TILE_SIZE, 14, 14);
+    // 15 15 - параметры закругления
+    g.fillRoundRect(xOffset, yOffset, TILE_SIZE, TILE_SIZE, 15, 15);
+    // Устанавливается цвет текста плитки.
     g.setColor(tile.getForeground());
+    // размер шрифта в зависимости от значения плитки.
     final int size = value < 100 ? 36 : value < 1000 ? 32 : 24;
+    // объект Font с выбранным размером шрифта и именем шрифта FONT_NAME.
     final Font font = new Font(FONT_NAME, Font.BOLD, size);
     g.setFont(font);
-
+    // Получается строковое представление значения плитки.
     String s = String.valueOf(value);
+    // Получаются метрики шрифта для вычисления размеров текста.
     final FontMetrics fm = getFontMetrics(font);
-
+    // Вычисляются ширина и высота текста.
     final int w = fm.stringWidth(s);
     final int h = -(int) fm.getLineMetrics(s, g).getBaselineOffsets()[2];
 
     if (value != 0)
+      // рисуется строка с текстом значения плитки по центру плитки.
       g.drawString(s, xOffset + (TILE_SIZE - w) / 2, yOffset + TILE_SIZE - (TILE_SIZE - h) / 2 - 2);
 
     if (myWin || myLose) {
+      // устанавливается цвет фона
       g.setColor(new Color(255, 255, 255, 30));
+      // рисуется прямоугольник
       g.fillRect(0, 0, getWidth(), getHeight());
+      // устанавливается цвет текста
       g.setColor(new Color(190, 78, 202));
+      // рисуется строка с сообщением о выигрыше или проигрыше
       g.setFont(new Font(FONT_NAME, Font.BOLD, 48));
       if (myWin) {
         g.drawString("Вы выиграли!", 68, 150);
@@ -351,11 +415,16 @@ public class Game3072 extends JPanel {
       }
     }
     g.setFont(new Font(FONT_NAME, Font.PLAIN, 18));
-    g.drawString("Счет: " + myScore, 200, 365);
+    g.drawString("Счет: " + myScore, 200, 410);
 
   }
 
   private static int offsetCoors(int arg) {
+    /*
+     * Используется для вычисления координат плитки на игровом поле.
+     * принимает аргумент "arg", который является индексом строки или столбца,
+     * вычисляет координату с учетом размера плитки и отступов между ними.
+     */
     return arg * (TILES_MARGIN + TILE_SIZE) + TILES_MARGIN;
   }
 
@@ -363,6 +432,9 @@ public class Game3072 extends JPanel {
     int value;
 
     public Tile() {
+      /*
+       * представляет собой отдельную плитку на игровом поле.
+       */
       this(0);
     }
 
@@ -371,11 +443,16 @@ public class Game3072 extends JPanel {
     }
 
     public boolean isEmpty() {
+      /*
+       * возвращает true, если значение плитки равно 0, т.е. плитка пустая.
+       */
       return value == 0;
     }
 
     public Color getForeground() {
-      return value < 16 ? new Color(0x776e65) :  new Color(0xf9f6f2);
+      // возвращает цвет текста на плитке в зависимости от ее значения.
+      // Если значение меньше 47, то цвет текста будет темным, иначе - светлым.
+      return value < 47 ? new Color(0x776e65) :  new Color(0xf9f6f2);
     }
 
     public Color getBackground() {
@@ -397,15 +474,17 @@ public class Game3072 extends JPanel {
   }
 
   public static void main(String[] args) {
+    // создаем новое окно игры "3072" с помощью класса JFrame
     JFrame game = new JFrame();
     game.setTitle("3072 Game");
     game.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     game.setSize(450, 500);
-    game.setResizable(false);
-
+    game.setResizable(true);
+    // добавляем на экран экз класса Game3072
     game.add(new Game3072());
-
+    // по центру
     game.setLocationRelativeTo(null);
+    // делаем видимым
     game.setVisible(true);
   }
 }
