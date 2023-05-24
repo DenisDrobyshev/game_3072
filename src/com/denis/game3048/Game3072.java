@@ -20,7 +20,9 @@ public class Game3072 extends JPanel {
   int myScore = 0;
 
   public Game3072() {
+    // размер окна игры
     setPreferredSize(new Dimension(450, 500));
+    // позволяет игроку фокусироваться на окне игры
     setFocusable(true);
     addKeyListener(new KeyAdapter() {
       @Override
@@ -82,7 +84,7 @@ public class Game3072 extends JPanel {
 
   public void left() {
     /*
-     * отвечает за сдвиг всех плиток влево на игровом поле,
+     * сдвигает все плитки влево на игровом поле,
      * слияние плиток одного номинала и добавление новой плитки в случае,
      * если было произведено слияние
      */
@@ -113,25 +115,42 @@ public class Game3072 extends JPanel {
   }
 
   public void right() {
+    /*
+     * сдвигает все плитки вправо
+     */
     myTiles = rotate(180);
     left();
     myTiles = rotate(180);
   }
 
   public void up() {
+    /*
+     * сдвигает все плитки вверх
+     */
     myTiles = rotate(270);
     left();
     myTiles = rotate(90);
   }
 
   public void down() {
+    /*
+     * сдвигает все плитки вниз
+     */
     myTiles = rotate(90);
     left();
     myTiles = rotate(270);
   }
 
   private Tile tileAt(int x, int y) {
+    /*
+     * возвращает плитку на заданных координатах
+     */
     return myTiles[x + y * 4];
+    // x + y * 4 используется для того, чтобы преобразовать двумерные координаты
+    // x и y в одномерный индекс элемента массива.
+
+    // координаты задаются в виде x и y,
+    // где x - номер столбца (от 0 до 3), а y - номер строки (от 0 до 3).
   }
 
   private void addTile() {
@@ -228,7 +247,7 @@ public class Game3072 extends JPanel {
   private Tile[] rotate(int angle) {
     /*
      * принимает на вход угол поворота angle и возвращает новый массив объектов Tile,
-     *  содержащий новые позиции плиток после поворота.
+     * содержащий новые позиции плиток после поворота.
      */
     Tile[] newTiles = new Tile[4 * 4];
     int offsetX = 3, offsetY = 3;
@@ -394,7 +413,7 @@ public class Game3072 extends JPanel {
 
     if (myWin || myLose) {
       // устанавливается цвет фона
-      g.setColor(new Color(255, 255, 255, 30));
+      g.setColor(new Color(255, 255, 255, 255));
       // рисуется прямоугольник
       g.fillRect(0, 0, getWidth(), getHeight());
       // устанавливается цвет текста
@@ -411,11 +430,11 @@ public class Game3072 extends JPanel {
       if (myWin || myLose) {
         g.setFont(new Font(FONT_NAME, Font.PLAIN, 16));
         g.setColor(new Color(128, 128, 128, 128));
-        g.drawString("Нажмите ENTER, чтобы начать заново", 80, getHeight() - 40);
       }
     }
     g.setFont(new Font(FONT_NAME, Font.PLAIN, 18));
-    g.drawString("Счет: " + myScore, 200, 410);
+    g.drawString("Счет: " + myScore, 200, 440);
+    g.drawString("Нажмите Enter для перезапуска", 100, 410);
 
   }
 
@@ -477,6 +496,7 @@ public class Game3072 extends JPanel {
     // создаем новое окно игры "3072" с помощью класса JFrame
     JFrame game = new JFrame();
     game.setTitle("3072 Game");
+    // завершение программы при нажатии на крестик
     game.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     game.setSize(450, 500);
     game.setResizable(true);
