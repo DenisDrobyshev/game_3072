@@ -10,7 +10,7 @@ import java.util.List;
 
 public class Game3072 extends JPanel {
   private static final Color BG_COLOR = new Color(0xFFFFFF);
-  private static final String FONT_NAME = "Arial";
+  private static final String FONT_NAME = "MonoSpace";
   private static final int TILE_SIZE = 80;
   private static final int TILES_MARGIN = 16;
 
@@ -425,7 +425,7 @@ public class Game3072 extends JPanel {
       }
       if (myLose) {
         g.drawString("Игра окончена!", 50, 130);
-        g.drawString("Вы проиграли!", 64, 200);
+        g.drawString("Вы проиграли!", 50, 200);
       }
       if (myWin || myLose) {
         g.setFont(new Font(FONT_NAME, Font.PLAIN, 16));
@@ -433,8 +433,8 @@ public class Game3072 extends JPanel {
       }
     }
     g.setFont(new Font(FONT_NAME, Font.PLAIN, 18));
-    g.drawString("Счет: " + myScore, 200, 440);
-    g.drawString("Нажмите Enter для перезапуска", 100, 410);
+    g.drawString("Счет: " + myScore, 150, 440);
+    g.drawString("Нажмите Enter для перезапуска", 52, 410);
 
   }
 
@@ -498,7 +498,7 @@ public class Game3072 extends JPanel {
     game.setTitle("3072 Game");
     // завершение программы при нажатии на крестик
     game.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-    game.setSize(450, 500);
+    game.setSize(400, 500);
     game.setResizable(true);
     // добавляем на экран экз класса Game3072
     game.add(new Game3072());
